@@ -6,7 +6,8 @@
 
 IMPORTAÇÃO DE DADOS DE SISTEMA LEGADO - acesso ao insight
  
- os textos do site antigo estão em arquivos php
+ os textos do site antigo estão em arquivos php.
+
  o escript a seguir lê a lista de suttas no arquivo files_to_migrate
  e importa o conteúdo deles já formatado para um banco de dados no formato WordPress
  como posts.
