@@ -21,10 +21,9 @@ error_reporting(E_ALL);
 
 
 $servername = "localhost";
-$username = "test_w";
-$password = "pass_w";
-$dbname = "teste_db";
-
+$username = "root";
+$password = "MyNewPass";
+$dbname = "wp1";
 
 
 
