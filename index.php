@@ -7,7 +7,7 @@
  * 
  * os textos do site antigo estão em arquivos php
  * o escript a seguir lê a lista de suttas no arquivo files_to_migrate
- * e iporta o conteúdo deles á formatado para um banco de dados no formato WordPress
+ * e importa o conteúdo deles já formatado para um banco de dados no formato WordPress
  * como posts
  * 
  */
@@ -22,10 +22,27 @@ error_reporting(E_ALL);
 /**
  * 
  * =======================================================
+ * 
+ * CONFIGURAÇÕES
+ * 
+ * =======================================================
  */
 
 
+
+
 $dir    = './files_to_migrate';
+
+
+$_POSTS_TABLE = 'w1_posts';
+
+
+/**
+ * 
+ * =======================================================
+ */
+
+
 $listFiles = getClearFileList($dir);
 
 debug($listFiles);
@@ -40,15 +57,25 @@ foreach($listFiles as $file)
 echo 'Success.';
 
 
+echo getAllPosts();
 
-//echo getAllPosts();
 
-
+die();
 
 /**
- * 
+ * THE END
  * =======================================================
  */
+
+/**----------------------------------------------------
+ * 
+ * =======================================================
+ * 
+ * FUNCTIONS:
+ * 
+ * 
+ */
+
 
 
 
@@ -93,7 +120,7 @@ function insertSuttaAsPost($dir, $fileName)
  * =======================================================
  * 
  * 
- * FUNÇÕES DE ACESSO À TABELA WP_POST
+ * FUNÇÕES DE ACESSO À TABELA DE POSTS
  * 
  * 
  * 
@@ -106,9 +133,9 @@ function getAllPosts()
 {
    
 		$conexao = $GLOBALS['conn'];
-		$sql = "SELECT * FROM w1_posts";
+		$sql = "SELECT * FROM ".$GLOBALS['_POSTS_TABLE'];
 		$result = $conexao->query($sql);
-    //debug($result);
+    
 
     $data = [];
 		if ($result->num_rows > 0) {
@@ -128,19 +155,10 @@ function getAllPosts()
 function insertPost($data)
 {
 		$conexao = $GLOBALS['conn'];
-		$data['title'] = cutHtmlFromTitle( $data['title']);
-       // $data['title'] =  formatTextQuotesToSQL( $data['title']);
-       // echo '----!!!'.$data['title'];
+		
+        $data = formatDataToinsertDB($data);
         
-
-        
-        $data['name'] =  formatTextQuotesToSQL( $data['name']);
-        $data['text'] =  formatTextQuotesToSQL( $data['text']);
-        //$conn = new PDO('sqlite:/home/lynn/music.sql3');
-
-        //$data['title'] =$conexao -> real_escape_string($data['title']);
-
-		$sql = "INSERT INTO `w1_posts` (`post_author`, `post_date`, `post_date_gmt`, `post_content`,
+		$sql = "INSERT INTO `".$GLOBALS['_POSTS_TABLE']."` (`post_author`, `post_date`, `post_date_gmt`, `post_content`,
                              `post_title`, `post_excerpt`, `post_status`, `comment_status`, `ping_status`, 
                              `post_password`, `post_name`, `to_ping`, `pinged`, `post_modified`, 
                              `post_modified_gmt`, `post_content_filtered`, `post_parent`, `guid`,
@@ -148,7 +166,7 @@ function insertPost($data)
                               
                               VALUES ( '1', '2023-04-08 05:55:12', '2023-04-08 05:55:12', '".$data['text']."', '".$data['title']."', '', 'publish', 'open', 'open', '', '".$data['name']."', '', '', '2023-04-08 05:55:12', '2023-04-08 05:55:12', '', '0', '', '0', 'post', '', '0'); ";
 		
-        debug($sql);
+        //debug($sql);
 		$result = $conexao->query($sql);
 		
 		if ($result) return ($conexao->insert_id);
@@ -169,6 +187,15 @@ function insertPost($data)
  * 
  * =======================================================
  */
+
+function formatDataToinsertDB($data)
+{
+    $data['title'] = cutHtmlFromTitle( $data['title']);
+    $data['name'] =  formatTextQuotesToSQL( $data['name']);
+    $data['text'] =  formatTextQuotesToSQL( $data['text']);
+
+    return $data;
+}
 
 
 

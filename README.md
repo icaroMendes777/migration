@@ -16,4 +16,10 @@ IMPORTAÇÃO DE DADOS DE SISTEMA LEGADO - acesso ao insight
  Algumas funcionalidades extras ainda estão para serem implementadas no futuro,
  como a geração de categorias de posts,
  mas o básico da importação já está pronto.
+
+ Configurações:
+ 
+ -Inserir dados de conexão com o BD em database.php
+
+ -Inserir a tabela alvo no topo de index.php
  
