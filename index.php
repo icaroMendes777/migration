@@ -48,6 +48,8 @@ $listFiles = getClearFileList($dir);
 debug($listFiles);
 
 
+
+
 //--------lista arquivos e um por um extrai o conteúdo e insere no BD
 foreach($listFiles as $file)
 {
@@ -91,28 +93,36 @@ function insertSuttaAsPost($dir, $fileName)
      * alguns requisitos ainda estão para mudar
      */
 
-    //echo $fileText;
+    echo $fileText;
     
-    //echo getSuttaCollection($fileName);
+    $suttaCol = getSuttaCollection($fileName);
     
-    //br();
+    // br();
     
-    // echo getSuttaIndex($fileName);
-    
-    // echo getIndex($fileText );
-    
-    // echo getTitle($fileText );
-    
-    // echo getTranslatedTitle($fileText );
-    
-    // echo getSuttaBody($fileText );
+    //  echo getSuttaIndex($fileName);
+    //  br();
+    //  echo getIndex($fileText );
+    //  br();
+    //  echo getTitle($fileText );
+    //  br();
+    //  echo getTranslatedTitle($fileText );
+    //  br();
+    //  echo getSuttaBody($fileText );
+    //  br();br();br();
+
 
     $post = [   'text'=> getSuttaBody($fileText ),
                 'title'=> getSuttaIndex($fileName).' - '.getTranslatedTitle($fileText ),
                 'name'=>'name'];
 
-    insertPost($post);
-    
+
+    $postId = insertPost($post);
+    $catId = getCategoryId($suttaCol);
+
+    createRelation($catId,$postId);
+
+    echo 'post: '.$postId.'cat: '.$catId;
+    br();
 }
 
 /**
@@ -172,6 +182,73 @@ function insertPost($data)
 		if ($result) return ($conexao->insert_id);
 		 
 		return null;		
+}
+
+
+/**
+ * 
+ * =======================================================
+ * 
+ * 
+ * FUNÇÕES DE ACESSO À TABELA 'terms' - que são as categorias/coleções
+ * 
+ * 
+ * 
+ * =======================================================
+ */
+
+
+
+function getCategoryId($cat)
+{
+
+    $catId = searchCategory($cat);
+   
+    if(!$catId){
+        createCategory($cat);
+    }
+
+    $catId = searchCategory($cat);
+    
+    return $catId;
+}
+
+/**
+ * return category id
+ */
+function searchCategory($cat)
+{
+    $conexao = $GLOBALS['conn'];
+
+    $sql =  "SELECT * FROM `w1_terms` WHERE `name`='".$cat."'"; 
+
+    $result = $conexao->query($sql);
+    $obj = $result -> fetch_object();
+    if($obj){
+        return $obj->term_id;
+    }
+
+    return null;
+}
+
+function createCategory($cat)
+{
+    $conexao = $GLOBALS['conn'];
+
+    $sql = "INSERT INTO `w1_terms` (`term_id`, `name`, `slug`, `term_group`) VALUES (NULL, '".$cat."', '".$cat."', '0')";
+
+    $conexao->query($sql);
+    
+}
+
+function createRelation($catId, $postId)
+{
+    
+    $conexao = $GLOBALS['conn'];
+
+    $sql = "INSERT INTO `w1_term_relationships` (`object_id`, `term_taxonomy_id`, `term_order`) VALUES ('".$postId."', '".$catId."', '0')";
+    $conexao->query($sql);
+
 }
 
 
